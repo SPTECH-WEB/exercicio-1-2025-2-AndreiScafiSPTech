@@ -20,6 +20,9 @@ public class UsuarioController {
     public ResponseEntity<List<Usuario>> buscarTodos() {
         try {
             List<Usuario> usuarios = repository.findAll();
+            if (usuarios.isEmpty()) {
+                return ResponseEntity.noContent().build();
+            }
             return ResponseEntity.ok(usuarios);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
@@ -29,9 +32,16 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<Usuario> criar(@RequestBody Usuario usuario) {
         try {
+            boolean cpfExiste = repository.existsByCpf(usuario.getCpf());
+            boolean emailExiste = repository.existsByEmail(usuario.getEmail());
+
+            if (cpfExiste || emailExiste) {
+                return ResponseEntity.status(HttpStatus.CONFLICT).build();
+            }
+
             Usuario novoUsuario = repository.save(usuario);
-            return ResponseEntity.status(201).body(novoUsuario);
-        } catch (Exception e){
+            return ResponseEntity.status(HttpStatus.CREATED).body(novoUsuario);
+        } catch (Exception e) {
             return ResponseEntity.internalServerError().build();
         }
     }

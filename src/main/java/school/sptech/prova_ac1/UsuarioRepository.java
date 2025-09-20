@@ -11,4 +11,6 @@ public interface UsuarioRepository extends JpaRepository<Usuario, Integer> {
     List<Usuario> findByDataNascimentoAfter(LocalDate dataNascimento);
     Optional<Usuario> findByEmail(String email);
     Optional<Usuario> findByCpf(String cpf);
+    boolean existsByCpf(String cpf);
+    boolean existsByEmail(String email);
 }
